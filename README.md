@@ -1,7 +1,7 @@
 # ft_irc
 42 Project
 
-Bu fonksiyonlar, ağ programlaması ve dosya işlemleri gibi işlemleri gerçekleştirmek için kullanılan soket programlama ve dosya işlemleri fonksiyonlarıdır. İşlevlerin bazılarının açıklamalarını aşağıda bulabilirsiniz:
+FUNCTION
 
 1. **socket**: Bir soket oluşturur ve iletişim için kullanılacak bir dosya tanıtıcısı döndürür.
 2. **close**: Bir soketi kapatır ve kullanılan kaynakları serbest bırakır.
@@ -29,4 +29,4 @@ Bu fonksiyonlar, ağ programlaması ve dosya işlemleri gibi işlemleri gerçekl
 24. **fcntl**: Dosya tanıtıcısının özelliklerini değiştirir.
 25. **poll**: Bir dizi dosya tanıtıcısını dinler ve olayları bekler.
 
-Bu fonksiyonların her biri belirli görevleri yerine getirir ve ağ programlaması veya dosya işlemleri gibi konularla ilgili kodlarda kullanılırlar. Her bir fonksiyon hakkında daha ayrıntılı bilgi edinmek
+
