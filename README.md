@@ -1,7 +1,7 @@
 # ft_irc
 42 Project
 
-## FUNCTION
+## FUNCTIONS
 
 1. **socket**: Bir soket oluşturur ve iletişim için kullanılacak bir dosya tanıtıcısı döndürür.
 2. **close**: Bir soketi kapatır ve kullanılan kaynakları serbest bırakır.
@@ -62,3 +62,85 @@ int udpSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); // UDP soketi oluştur
 ```
 
 Yukarıdaki örneklerde, `AF_INET` adresleme alanında çalışan TCP ve UDP soketleri oluşturulmaktadır.
+
+
+## Listen fonksiyonu kullanimi
+
+`listen` fonksiyonu, bir soketi bağlantı taleplerini kabul etmeye hazır hale getirmek için kullanılır. Aşağıda `listen` fonksiyonunun imzası ve argümanları yer almaktadır:
+
+```cpp
+int listen(int sockfd, int backlog);
+```
+
+`listen` fonksiyonunun iki argümanı vardır:
+
+1. **sockfd**: Dinlemeye alınacak soketin dosya tanıtıcısı (file descriptor) veya soketin kendisi. Bu, `socket` fonksiyonu tarafından döndürülen soketin dosya tanıtıcısıdır.
+
+2. **backlog**: Bekleyen bağlantı sırasındaki bağlantı kuyruğunun maksimum uzunluğunu belirten bir tamsayı değeri. Bu, aynı anda kabul edilebilecek maksimum bağlantı sayısını belirtir. Talep edilen bağlantılar bu kuyrukta bekler. Bağlantıların taleplerini kabul etmek için `accept` fonksiyonu kullanılır.
+
+`listen` fonksiyonu, başarı durumunda 0 değerini döndürür. Başarısızlık durumunda -1 döndürür ve `errno` değişkeni ayarlanır.
+
+Örnek bir kullanım:
+
+```cpp
+if (listen(sock, 5) == -1) {
+    std::cerr << "Soket dinlemeye başlanamadı." << std::endl;
+    return 1;
+}
+```
+
+Yukarıdaki örnekte, `listen` fonksiyonu `sock` soketini dinlemeye başlar ve maksimum 5 bağlantı talebini kuyrukta bekletebilir. Bu, aynı anda en fazla 5 bağlantı talebinin kabul edilebileceği anlamına gelir.
+
+## Basit bir socket dinleme islemi
+
+Soketi dinlemeye almak için aşağıdaki adımları izleyebilirsiniz:
+
+1. Soket oluşturun: `socket` fonksiyonunu kullanarak bir soket oluşturun. İlgili adresleme alanı (`AF_INET` veya `AF_INET6`) ve soket türü (`SOCK_STREAM` veya `SOCK_DGRAM`) seçimini yapın.
+
+2. Adres ve bağlantı noktası atanın: Oluşturulan sokete bir adres ve bağlantı noktası atayın. Bu, `bind` fonksiyonunu kullanarak yapılır. Adres, genellikle "localhost" veya kullanmak istediğiniz bir IP adresi olabilir ve bağlantı noktası belirli bir port numarasıdır.
+
+3. Dinlemeye başlayın: Soketi dinlemeye başlamak için `listen` fonksiyonunu kullanın. Bu fonksiyon, gelen bağlantı taleplerini kabul etmeye ve uygun bağlantıları oluşturmak için beklemeye başlar.
+
+Örnek bir C++ programında bu adımlar aşağıdaki gibi olabilir:
+
+```cpp
+#include <iostream>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+int main() {
+    // Soket oluşturma
+    int soket = socket(AF_INET, SOCK_STREAM, 0);
+    if (soket == -1) {
+        std::cerr << "Soket oluşturulamadı." << std::endl;
+        return 1;
+    }
+
+    // Soket adresi ayarlama
+    sockaddr_in serverAddress{};
+    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_addr.s_addr = htonl(INADDR_ANY); // Tüm yerel IP adreslerini kabul et
+    serverAddress.sin_port = htons(12345); // Belirli bir bağlantı noktası
+
+    // Soketi localhost ve belirli bir bağlantı noktasına bağlama
+    if (bind(soket, reinterpret_cast<sockaddr*>(&serverAddress), sizeof(serverAddress)) == -1) {
+        std::cerr << "Soket bağlanamadı." << std::endl;
+        return 1;
+    }
+
+    // Soketi dinlemeye başlama
+    if (listen(soket, 1) == -1) {
+        std::cerr << "Soket dinlemeye başlanamadı." << std::endl;
+        return 1;
+    }
+
+    std::cout << "Soket oluşturuldu ve dinleme başladı." << std::endl;
+
+    // Soketi kapatma
+    close(soket);
+
+    return 0;
+}
+```
+
+Yukarıdaki örnekte, soket oluşturulur, bir adres ve bağlantı noktası atanır ve soket dinlemeye başlar. Program, "Soket oluşturuldu ve dinleme başladı." mesajını gösterecektir. Bu noktadan itibaren soket, gelen bağlantı taleplerini kabul edebilir ve uygun işlemlerle devam edebilirsiniz.

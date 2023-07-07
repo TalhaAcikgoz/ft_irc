@@ -1,38 +1,53 @@
 #include "ft_irc.hpp"
 
+int connect_socket(int sockett) {
+	int connectt;
+
+	sockaddr_in serverAddress;
+	serverAddress.sin_family = AF_INET;
+	serverAddress.sin_addr.s_addr = inet_addr("127.0.0.1"); // Sunucu IP adresi
+	serverAddress.sin_port = htons(4242); // Sunucu bağlantı noktası
+
+	// Sokete bağlanma
+	if ((connectt = connect(sockett, reinterpret_cast<sockaddr*>(&serverAddress), sizeof(serverAddress))) == -1) {
+		std::cerr << "Sokete bağlanılamadı." << std::endl;
+		return -1;
+	}
+	return connectt;
+}
+
 int main() {
-    // Soket oluşturma
-    int soket = socket(AF_INET, SOCK_STREAM, 0);
-    if (soket == -1) {
-        std::cerr << "Soket oluşturulamadı." << std::endl;
-        return 1;
-    }
+	int bindd;
+	int listenn;
+	int socketwo = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-    // Soket adresi ayarlama
-    sockaddr seradrr;
-    seradrr.sa_family = AF_INET;
-    seradrr.sa_data;
-    sockaddr_in serverAddress{};
-    serverAddress.sin_family = AF_INET;
-    serverAddress.sin_addr.s_addr = htonl(INADDR_ANY); // Tüm yerel IP adreslerini kabul et
-    serverAddress.sin_port = htons(12345); // Belirli bir bağlantı noktası
+	if (socketwo == -1)
+		std::cerr << "socketwo is not opened" << std::endl;
+	else
+		std::cout << "socketwo fd:" << socketwo << std::endl;
 
-    // Soketi localhost ve belirli bir bağlantı noktasına bağlama
-    if (bind(soket, reinterpret_cast<sockaddr*>(&serverAddress), sizeof(serverAddress)) == -1) {
-        std::cerr << "Soket bağlanamadı." << std::endl;
-        return 1;
-    }
+	sockaddr_in serverAddress;
+	serverAddress.sin_family = AF_INET;
+	serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
+	serverAddress.sin_port = htons(4242);
 
-    // Soketi dinlemeye başlama
-    if (listen(soket, 1) == -1) {
-        std::cerr << "Soket dinlemeye başlanamadı." << std::endl;
-        return 1;
-    }
+	if ((bindd = bind(socketwo, reinterpret_cast<sockaddr*>(&serverAddress), sizeof(serverAddress))) == -1) {
+		std::cerr << "socket baglanamadi." << std::endl;
+		return 1;
+	}
 
-    std::cout << "Soket oluşturuldu ve dinleme başladı." << std::endl;
+	if ((listenn = listen(socketwo, 1)) == -1) {
+		std::cerr << "socket dinleme hatali." << std::endl;
+		return 1;
+	}
 
-    // Soketi kapatma
-    close(soket);
+	std::cout << "bind: " << bindd << " listenn: " << listenn << std::endl << "socket dinlenmeye baslandi." << std::endl;
 
-    return 0;
+	std::cout << "connect: " << connect_socket(socketwo) << std::endl;
+
+	while (1) {
+		;
+	}
+
+	return 0;
 }
